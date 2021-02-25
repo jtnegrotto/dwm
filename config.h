@@ -11,6 +11,13 @@ static const int systraypinningfailfirst = 1;        /* if pinning fails, displa
 static const int showsystray             = 1;        /* 0 means no systray */
 static const char *fonts[]               = { "monospace:size=10" };
 static const char dmenufont[]            = "monospace:size=10";
+static const unsigned int baralpha       = 0xd0;
+static const unsigned int borderalpha    = OPAQUE;
+static const unsigned int alphas[][3]    = {
+  /*               fg      bg        border     */
+  [SchemeNorm] = { OPAQUE, baralpha, borderalpha },
+  [SchemeSel]  = { OPAQUE, baralpha, borderalpha },
+};
 static const char col_gray1[]            = "#222222";
 static const char col_gray2[]            = "#444444";
 static const char col_gray3[]            = "#bbbbbb";
