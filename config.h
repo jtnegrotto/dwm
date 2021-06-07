@@ -12,22 +12,34 @@ static const int systraypinningfailfirst = 1;        /* if pinning fails, displa
 static const int showsystray             = 1;        /* 0 means no systray */
 static const char *fonts[]               = { "monospace:size=10" };
 static const char dmenufont[]            = "monospace:size=10";
-static const unsigned int baralpha       = 0xd0;
+static const unsigned int baralpha       = 0xF7;
 static const unsigned int borderalpha    = OPAQUE;
 static const unsigned int alphas[][3]    = {
-  /*               fg      bg        border     */
-  [SchemeNorm] = { OPAQUE, baralpha, borderalpha },
-  [SchemeSel]  = { OPAQUE, baralpha, borderalpha },
+	/*               fg      bg        border     */
+	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
+	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
 };
-static const char col_gray1[]            = "#222222";
-static const char col_gray2[]            = "#444444";
-static const char col_gray3[]            = "#bbbbbb";
-static const char col_gray4[]            = "#eeeeee";
-static const char col_green[]            = "#115914";
-static const char *colors[][3]           = {
-	/*               fg         bg         border   */
-	[SchemeNorm] = { col_gray3, col_gray1, col_gray2 },
-	[SchemeSel]  = { col_gray4, col_green, col_green },
+/* solarized colorscheme */
+#ifdef LIGHT
+static const char normbordercolor[] = "#fdf6e3";
+static const char normbgcolor[]     = "#fdf6e3";
+static const char normfgcolor[]     = "#839496";
+static const char selbordercolor[]  = "#586e75";
+static const char selbgcolor[]      = "#586e75";
+static const char selfgcolor[]      = "#fdf6e3";
+#else
+static const char normbordercolor[] = "#002b36";
+static const char normbgcolor[]     = "#002b36";
+static const char normfgcolor[]     = "#657b83";
+static const char selbordercolor[]  = "#93a1a1";
+static const char selbgcolor[]      = "#93a1a1";
+static const char selfgcolor[]      = "#002b36";
+#endif
+
+static const char *colors[][3] = {
+	/*               fg           bg           border         */
+	[SchemeNorm] = { normfgcolor, normbgcolor, normbordercolor },
+	[SchemeSel]  = { selfgcolor,  selbgcolor,  selbordercolor  },
 };
 
 /* tagging */
@@ -69,7 +81,10 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "rofi", "-show", "run", NULL };
-static const char *termcmd[]  = { "st", NULL };
+static const char *passmenucmd[] = { "passmenu", NULL };
+static const char *fullscreenshot[] = { "maim", "~/pix/screenshots/$(date +'%Y-%m-%d-%I:%M:%S').png", NULL };
+static const char *partialscreenshot[] = { "maim", "-u", "-s", "~/pix/screenshots/$(date +'%Y-%m-%d-%I:%M:%S').png", NULL };
+static const char *termcmd[]  = { "alacritty", NULL };
 static const char *brightnessdowncmd[] = { "light", "-U", "5%", NULL };
 static const char *brightnessupcmd[] = { "light", "-A", "5%", NULL };
 static const char *volumeupcmd[] = { "pulsemixer", "--change-volume", "+5", "--max-volume", "100", NULL };
@@ -83,16 +98,20 @@ static const char *micmutecmd[] = { "pactl", "set-source-mute", "@DEFAULT_SOURCE
 #define VolumeDown 0x1008ff11
 #define VolumeMute 0x1008ff12
 #define MicMute 0x1008ffb2
+#define Print 0xff61
 
 static Key keys[] = {
 	/* modifier                     key             function        argument */
-  { 0,                            VolumeUp,       spawn,          {.v = volumeupcmd} },
-  { 0,                            VolumeDown,     spawn,          {.v = volumedowncmd} },
-  { 0,                            VolumeMute,     spawn,          {.v = volumemutecmd} },
-  { 0,                            MicMute,        spawn,          {.v = micmutecmd} },
-  { 0,                            BrightnessUp,   spawn,          {.v = brightnessupcmd} },
-  { 0,                            BrightnessDown, spawn,          {.v = brightnessdowncmd} },
+	{ 0,                            VolumeUp,       spawn,          {.v = volumeupcmd} },
+	{ 0,                            VolumeDown,     spawn,          {.v = volumedowncmd} },
+	{ 0,                            VolumeMute,     spawn,          {.v = volumemutecmd} },
+	{ 0,                            MicMute,        spawn,          {.v = micmutecmd} },
+	{ 0,                            BrightnessUp,   spawn,          {.v = brightnessupcmd} },
+	{ 0,                            BrightnessDown, spawn,          {.v = brightnessdowncmd} },
 	{ MODKEY,                       XK_d,           spawn,          {.v = dmenucmd } },
+	{ MODKEY,                       XK_p,           spawn,          {.v = passmenucmd } },
+	{ MODKEY,                       Print,          spawn,          {.v = fullscreenshot } },
+	{ MODKEY|ShiftMask,             Print,          spawn,          {.v = partialscreenshot } },
 	{ MODKEY,                       XK_Return,      spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,           togglebar,      {0} },
 	{ MODKEY,                       XK_j,           focusstack,     {.i = +1 } },
@@ -115,9 +134,9 @@ static Key keys[] = {
 	{ MODKEY,                       XK_period,      focusmon,       {.i = +1 } },
 	{ MODKEY|ShiftMask,             XK_comma,       tagmon,         {.i = -1 } },
 	{ MODKEY|ShiftMask,             XK_period,      tagmon,         {.i = +1 } },
-  { MODKEY,                       XK_minus,       setgaps,        {.i = -1 } },
-  { MODKEY,                       XK_equal,       setgaps,        {.i = +1 } },
-  { MODKEY|ShiftMask,             XK_equal,       setgaps,        {.i =  0 } },
+	{ MODKEY,                       XK_minus,       setgaps,        {.i = -1 } },
+	{ MODKEY,                       XK_equal,       setgaps,        {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_equal,       setgaps,        {.i =  0 } },
 	TAGKEYS(                        XK_1,                           0)
 	TAGKEYS(                        XK_2,                           1)
 	TAGKEYS(                        XK_3,                           2)
