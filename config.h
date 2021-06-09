@@ -11,7 +11,6 @@ static const unsigned int systrayspacing = 2;        /* systray spacing */
 static const int systraypinningfailfirst = 1;        /* if pinning fails, display systray on the first monitor, false: display systray on the last monitor */
 static const int showsystray             = 1;        /* 0 means no systray */
 static const char *fonts[]               = { "monospace:size=10" };
-static const char dmenufont[]            = "monospace:size=10";
 static const unsigned int baralpha       = 0xF7;
 static const unsigned int borderalpha    = OPAQUE;
 static const unsigned int alphas[][3]    = {
@@ -78,41 +77,8 @@ static const Layout layouts[] = {
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
-/* commands */
-static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "rofi", "-show", "run", NULL };
-static const char *passmenucmd[] = { "passmenu", NULL };
-static const char *fullscreenshot[] = { "maim", "~/pix/screenshots/$(date +'%Y-%m-%d-%I:%M:%S').png", NULL };
-static const char *partialscreenshot[] = { "maim", "-u", "-s", "~/pix/screenshots/$(date +'%Y-%m-%d-%I:%M:%S').png", NULL };
-static const char *termcmd[]  = { "alacritty", NULL };
-static const char *brightnessdowncmd[] = { "light", "-U", "5%", NULL };
-static const char *brightnessupcmd[] = { "light", "-A", "5%", NULL };
-static const char *volumeupcmd[] = { "pulsemixer", "--change-volume", "+5", "--max-volume", "100", NULL };
-static const char *volumedowncmd[] = { "pulsemixer", "--change-volume", "-5", NULL };
-static const char *volumemutecmd[] = { "pactl", "set-sink-mute", "@DEFAULT_SINK@", "toggle", NULL };
-static const char *micmutecmd[] = { "pactl", "set-source-mute", "@DEFAULT_SOURCE@", "toggle", NULL };
-
-#define BrightnessUp 0x1008ff02
-#define BrightnessDown 0x1008ff03
-#define VolumeUp 0x1008ff13
-#define VolumeDown 0x1008ff11
-#define VolumeMute 0x1008ff12
-#define MicMute 0x1008ffb2
-#define Print 0xff61
-
 static Key keys[] = {
 	/* modifier                     key             function        argument */
-	{ 0,                            VolumeUp,       spawn,          {.v = volumeupcmd} },
-	{ 0,                            VolumeDown,     spawn,          {.v = volumedowncmd} },
-	{ 0,                            VolumeMute,     spawn,          {.v = volumemutecmd} },
-	{ 0,                            MicMute,        spawn,          {.v = micmutecmd} },
-	{ 0,                            BrightnessUp,   spawn,          {.v = brightnessupcmd} },
-	{ 0,                            BrightnessDown, spawn,          {.v = brightnessdowncmd} },
-	{ MODKEY,                       XK_d,           spawn,          {.v = dmenucmd } },
-	{ MODKEY,                       XK_p,           spawn,          {.v = passmenucmd } },
-	{ MODKEY,                       Print,          spawn,          {.v = fullscreenshot } },
-	{ MODKEY|ShiftMask,             Print,          spawn,          {.v = partialscreenshot } },
-	{ MODKEY,                       XK_Return,      spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,           togglebar,      {0} },
 	{ MODKEY,                       XK_j,           focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,           focusstack,     {.i = -1 } },
@@ -156,7 +122,6 @@ static Button buttons[] = {
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
@@ -164,5 +129,23 @@ static Button buttons[] = {
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
 	{ ClkTagBar,            MODKEY,         Button1,        tag,            {0} },
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
+};
+
+static const char *ipcsockpath = "/tmp/dwm.sock";
+static IPCCommand ipccommands[] = {
+	IPCCOMMAND(  view,                1,      {ARG_TYPE_UINT}   ),
+	IPCCOMMAND(  toggleview,          1,      {ARG_TYPE_UINT}   ),
+	IPCCOMMAND(  tag,                 1,      {ARG_TYPE_UINT}   ),
+	IPCCOMMAND(  toggletag,           1,      {ARG_TYPE_UINT}   ),
+	IPCCOMMAND(  tagmon,              1,      {ARG_TYPE_UINT}   ),
+	IPCCOMMAND(  focusmon,            1,      {ARG_TYPE_SINT}   ),
+	IPCCOMMAND(  focusstack,          1,      {ARG_TYPE_SINT}   ),
+	IPCCOMMAND(  zoom,                1,      {ARG_TYPE_NONE}   ),
+	IPCCOMMAND(  incnmaster,          1,      {ARG_TYPE_SINT}   ),
+	IPCCOMMAND(  killclient,          1,      {ARG_TYPE_SINT}   ),
+	IPCCOMMAND(  togglefloating,      1,      {ARG_TYPE_NONE}   ),
+	IPCCOMMAND(  setmfact,            1,      {ARG_TYPE_FLOAT}  ),
+	IPCCOMMAND(  setlayoutsafe,       1,      {ARG_TYPE_PTR}    ),
+	IPCCOMMAND(  quit,                1,      {ARG_TYPE_NONE}   )
 };
 
