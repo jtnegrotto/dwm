@@ -10,7 +10,7 @@ static const unsigned int systraypinning = 0;        /* 0: sloppy systray follow
 static const unsigned int systrayspacing = 2;        /* systray spacing */
 static const int systraypinningfailfirst = 1;        /* if pinning fails, display systray on the first monitor, false: display systray on the last monitor */
 static const int showsystray             = 1;        /* 0 means no systray */
-static const char *fonts[]               = { "monospace:size=10" };
+static const char *fonts[]               = { "Iosevka:size=12", "JoyPixels:size=12" };
 static const unsigned int baralpha       = 0xF7;
 static const unsigned int borderalpha    = OPAQUE;
 static const unsigned int alphas[][3]    = {
