@@ -1,7 +1,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* appearance */
-static const unsigned int borderpx       = 4;        /* border pixel of windows */
+static const unsigned int borderpx       = 2;        /* border pixel of windows */
 static const unsigned int gappx          = 5;        /* gap size */
 static const unsigned int snap           = 32;       /* snap pixel */
 static const int showbar                 = 1;        /* 0 means no bar */
@@ -18,22 +18,13 @@ static const unsigned int alphas[][3]    = {
 	[SchemeNorm] = { OPAQUE, baralpha, borderalpha },
 	[SchemeSel]  = { OPAQUE, baralpha, borderalpha },
 };
-/* solarized colorscheme */
-#ifdef LIGHT
-static const char normbordercolor[] = "#fdf6e3";
-static const char normbgcolor[]     = "#fdf6e3";
-static const char normfgcolor[]     = "#839496";
-static const char selbordercolor[]  = "#586e75";
-static const char selbgcolor[]      = "#586e75";
-static const char selfgcolor[]      = "#fdf6e3";
-#else
-static const char normbordercolor[] = "#002b36";
-static const char normbgcolor[]     = "#002b36";
-static const char normfgcolor[]     = "#657b83";
-static const char selbordercolor[]  = "#93a1a1";
-static const char selbgcolor[]      = "#93a1a1";
-static const char selfgcolor[]      = "#002b36";
-#endif
+/* lucius colorscheme */
+static const char normbordercolor[] = "#d7d7d7";
+static const char normbgcolor[]     = "#303030";
+static const char normfgcolor[]     = "#d7d7d7";
+static const char selbordercolor[]  = "#005f87";
+static const char selbgcolor[]      = "#005f87";
+static const char selfgcolor[]      = "#d7d7d7";
 
 static const char *colors[][3] = {
 	/*               fg           bg           border         */
